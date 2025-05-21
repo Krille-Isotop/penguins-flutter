@@ -8,7 +8,7 @@ import '../penguinList.dart';
 import '../penguin.dart';
 
 Future<PenguinList> fetchPenguins() async {
-  final response = await http.get('http://127.0.0.1:3000/penguins');
+  final response = await http.get(Uri.parse('http://127.0.0.1:3000/penguins'));
 
   if (response.statusCode == 200) {
     print(response.body);
@@ -20,17 +20,19 @@ Future<PenguinList> fetchPenguins() async {
 
 
 class PenguinListRoute extends StatefulWidget {
-  PenguinListRoute({ Key key }) : super(key: key);
+  PenguinListRoute({ Key? key }) : super(key: key);
 
   @override
   _PenguinListState createState() => _PenguinListState();
 }
 
 class _PenguinListState extends State<PenguinListRoute> {
-  Future<PenguinList> futurePenguins;
+  late Future<PenguinList> futurePenguins;
 
   void refreshPenguins() {
-    futurePenguins = fetchPenguins();
+    setState(() {
+      futurePenguins = fetchPenguins();
+    });
   }
 
   @override
@@ -69,7 +71,11 @@ class _PenguinListState extends State<PenguinListRoute> {
           future: futurePenguins,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              var penguins = snapshot.data.penguins;
+              var penguinData = snapshot.data;
+              if (penguinData == null) {
+                return Text("No data available"); // Or some other placeholder
+              }
+              var penguins = penguinData.penguins;
               return ListView.builder(
                 itemCount: penguins.length,
                 itemBuilder: (context, index) {

@@ -5,7 +5,7 @@ import '../penguin.dart';
 class PenguinDetailsRoute extends StatefulWidget {
   final Penguin penguin;
 
-  PenguinDetailsRoute({ Key key, @required this.penguin }): super(key: key);
+  PenguinDetailsRoute({ Key? key, required this.penguin }): super(key: key);
 
   @override
   PenguinForm createState() {
@@ -18,7 +18,7 @@ class PenguinForm extends State<PenguinDetailsRoute> {
   final _formKey = GlobalKey<FormState>();
   final _textEditingController = TextEditingController();
 
-  PenguinForm({ @required this.penguin });
+  PenguinForm({ required this.penguin });
 
   @override
   void dispose() {
@@ -39,8 +39,8 @@ class PenguinForm extends State<PenguinDetailsRoute> {
         child: Container(margin: const EdgeInsets.all(50.0), child: Column(children: <Widget>[
           TextFormField(
             controller: _textEditingController,
-            validator: (value) {
-              if (value.isEmpty) {
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
                 return "You need to enter a breed";
               }
 
@@ -48,11 +48,11 @@ class PenguinForm extends State<PenguinDetailsRoute> {
             },
           ),
           SizedBox(height: 20),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
-              if (_formKey.currentState.validate()) {
+              if (_formKey.currentState?.validate() ?? false) {
                 http.put(
-                  'http://127.0.0.1:3000/penguins/${this.penguin.id.toString()}', 
+                  Uri.parse('http://127.0.0.1:3000/penguins/${this.penguin.id.toString()}'), 
                   body: { 'breed': _textEditingController.text 
                 })
                   .then((result) => {
@@ -63,9 +63,9 @@ class PenguinForm extends State<PenguinDetailsRoute> {
             child: Text('Update penguin breed'),
           ),
           SizedBox(height: 10),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
-              http.delete('http://127.0.0.1:3000/penguins/${this.penguin.id.toString()}')
+              http.delete(Uri.parse('http://127.0.0.1:3000/penguins/${this.penguin.id.toString()}'))
                 .then((result) => {
                   Navigator.pop(context)
                 });
@@ -73,7 +73,7 @@ class PenguinForm extends State<PenguinDetailsRoute> {
             child: Text('Delete penguin'),
           ),
           SizedBox(height: 10),
-          RaisedButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
